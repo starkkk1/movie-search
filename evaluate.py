@@ -9,16 +9,56 @@ them id trong search.py.
 
 Chay: python evaluate.py
 """
+import sys
+sys.stdout.reconfigure(encoding="utf-8")
+
 from search import search
 
-# TODO: thay bang 10-20 truy van that va id ground truth cua ban.
-# Vi du minh hoa (id la id lay tu TMDB, ban can dien id thuc te sau khi
-# chay python search.py "<query>" va xem ket qua):
+# Ground truth: moi truy van kem danh sach ID phim TMDB duoc xac nhan la phu hop
 QUERIES = [
-    {"query": "phim hanh dong", "relevant": []},
-    {"query": "phim kinh di", "relevant": []},
-    {"query": "phim hoat hinh gia dinh", "relevant": []},
-    # ... them cac truy van con lai
+    # Truy van tieng Viet - the loai
+    {
+        "query": "phim hành động",
+        "relevant": [345887, 282035, 119450, 1236153, 1292415, 668489, 1318447, 10196],
+    },
+    {
+        "query": "phim kinh dị",
+        "relevant": [4258, 4256, 1273221, 4247, 4257, 1124620, 1138194, 1226578, 4248, 1430698],
+    },
+    {
+        "query": "phim hoạt hình gia đình",
+        "relevant": [35, 49519, 10315, 629542, 459151, 421892, 9806],
+    },
+    {
+        "query": "phim lãng mạn tình yêu",
+        "relevant": [698508, 11036, 1358005, 43347, 1097549, 19913, 43949],
+    },
+    {
+        "query": "phim khoa học viễn tưởng",
+        "relevant": [686, 34851, 1064028, 9426, 1236153, 9016, 1423191, 2675],
+    },
+    {
+        "query": "phim tài liệu",
+        "relevant": [1662317, 1715492, 1413097, 666558, 1664011, 1708739, 58395],
+    },
+    # Truy van tieng Anh - the loai
+    {
+        "query": "horror scary",
+        "relevant": [1430698, 9552, 9426, 132232, 1064028, 1032823, 360784, 1477712],
+    },
+    {
+        "query": "comedy funny",
+        "relevant": [454619, 76493, 8363, 100042, 621, 1325734, 35],
+    },
+    {
+        "query": "adventure fantasy",
+        "relevant": [10196, 10195, 1698863, 763215, 9016, 639933, 10588],
+    },
+    # Truy van tieng Anh - ten phim cu the
+    {
+        "query": "Avengers",
+        "relevant": [24428, 299536, 299534, 100402, 299537, 99861],
+    },
 ]
 
 
