@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+
+# Data (chứa file lớn và dữ liệu nhạy cảm)
+data/
+
+# Biến môi trường
+.env
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Editor
+.vscode/
+.idea/
+*.swp
