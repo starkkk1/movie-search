@@ -11,23 +11,37 @@ Cach dung:
 import argparse
 import json
 import time
-import urllib.request
+
+import requests
 
 BASE_URL = "https://api.themoviedb.org/3"
 GENRE_URL = f"{BASE_URL}/genre/movie/list?language=vi"
 DISCOVER_URL = f"{BASE_URL}/discover/movie?language=vi&sort_by=popularity.desc&page={{page}}"
 
+MAX_RETRIES = 4
+
 
 def call_api(url: str, token: str) -> dict:
-    req = urllib.request.Request(
-        url,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "accept": "application/json",
-        },
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "accept": "application/json",
+        # Mot so mang/firewall chan request khong co User-Agent giong trinh duyet
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    }
+    last_error = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            resp = requests.get(url, headers=headers, timeout=15)
+            resp.raise_for_status()
+            return resp.json()
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout,
+                requests.exceptions.HTTPError) as e:
+            last_error = e
+            wait = attempt * 2
+            print(f"    (lan {attempt}/{MAX_RETRIES} that bai: {e}, thu lai sau {wait}s)")
+            time.sleep(wait)
+    raise last_error
 
 
 def fetch_genres(token: str) -> dict:
@@ -43,7 +57,7 @@ def fetch_movies(token: str, pages: int) -> list:
         try:
             data = call_api(url, token)
         except Exception as e:
-            print(f"  loi o page {page}: {e}, bo qua")
+            print(f"  page {page} loi sau {MAX_RETRIES} lan thu: {e}, bo qua page nay")
             continue
 
         for m in data.get("results", []):
