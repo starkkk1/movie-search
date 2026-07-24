@@ -73,8 +73,22 @@ def build_document(movie: dict) -> str:
     return clean_text(" ".join(parts))
 
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+MOVIES_PATH = DATA_DIR / "movies.json"
+INDEX_PATH  = DATA_DIR / "index.pkl"
+
+
 def main():
-    with open("data/movies.json", "r", encoding="utf-8") as f:
+    if not MOVIES_PATH.exists():
+        raise FileNotFoundError(
+            f"Khong tim thay file du lieu tai: {MOVIES_PATH}\n"
+            "Vui long chay 'python fetch_movies.py --pages 100' truoc."
+        )
+
+    with open(MOVIES_PATH, "r", encoding="utf-8") as f:
         movies = json.load(f)
 
     print(f"Dang xu ly {len(movies)} phim...")
@@ -83,7 +97,8 @@ def main():
     vectorizer = TfidfVectorizer(min_df=1)
     tfidf_matrix = vectorizer.fit_transform(documents)
 
-    with open("data/index.pkl", "wb") as f:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with open(INDEX_PATH, "wb") as f:
         pickle.dump({
             "vectorizer": vectorizer,
             "tfidf_matrix": tfidf_matrix,
@@ -91,7 +106,8 @@ def main():
         }, f)
 
     print(f"Da xay xong index: {tfidf_matrix.shape[0]} van ban, {tfidf_matrix.shape[1]} tu vung")
-    print("Luu vao data/index.pkl")
+    print(f"Luu vao {INDEX_PATH}")
+
 
 
 if __name__ == "__main__":

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Máy Tìm Kiếm Phim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+      color: #f1f5f9;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 0 24px;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    .logo {
+      font-size: 3.5rem;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 40px;
+      font-size: 1rem;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.07);
+      color: #f1f5f9;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .search-input::placeholder { color: #64748b; }
+
+    .search-input:focus {
+      border-color: #60a5fa;
+      background: rgba(255,255,255,0.10);
+    }
+
+    .search-btn {
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover  { opacity: 0.88; }
+    .search-btn:active { transform: scale(0.97); }
+
+    .hints {
+      margin-top: 24px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hint-tag {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid #334155;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .hint-tag:hover {
+      background: rgba(96,165,250,0.15);
+      color: #60a5fa;
+      border-color: #60a5fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="logo">🎬</div>
+    <h1>Máy Tìm Kiếm Phim</h1>
+    <p class="subtitle">Tìm kiếm phim tiếng Việt và tiếng Anh theo tên, thể loại, nội dung</p>
+
+    <form action="/search" method="get">
+      <input
+        id="search-input"
+        class="search-input"
+        type="text"
+        name="q"
+        placeholder="Nhập tên phim, thể loại, từ khóa..."
+        autofocus
+        autocomplete="off"
+      >
+      <button class="search-btn" type="submit">Tìm kiếm</button>
+    </form>
+
+    <div class="hints">
+      <a class="hint-tag" href="/search?q=phim+kinh+dị">phim kinh dị</a>
+      <a class="hint-tag" href="/search?q=phim+hành+động">phim hành động</a>
+      <a class="hint-tag" href="/search?q=hoạt+hình+gia+đình">hoạt hình gia đình</a>
+      <a class="hint-tag" href="/search?q=horror+scary">horror scary</a>
+      <a class="hint-tag" href="/search?q=comedy+funny">comedy funny</a>
+      <a class="hint-tag" href="/search?q=Avengers">Avengers</a>
+    </div>
+  </div>
+</body>
+</html>

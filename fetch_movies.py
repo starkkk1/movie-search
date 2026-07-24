@@ -93,6 +93,12 @@ def fetch_movies(token: str, pages: int, allowed_languages: set = None) -> list:
     return movies
 
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DEFAULT_OUT = BASE_DIR / "data" / "movies.json"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -101,7 +107,7 @@ def main():
         help="TMDB API Read Access Token (neu khong truyen, doc tu bien moi truong TMDB_TOKEN trong .env)",
     )
     parser.add_argument("--pages", type=int, default=100, help="So trang can tai (moi trang ~20 phim)")
-    parser.add_argument("--out", default="data/movies.json")
+    parser.add_argument("--out", default=str(DEFAULT_OUT))
     parser.add_argument(
         "--languages",
         default="vi,en",
@@ -119,10 +125,13 @@ def main():
     print(f"Bat dau tai du lieu ({args.pages} trang), chi lay ngon ngu: {allowed}...")
     movies = fetch_movies(token, args.pages, allowed_languages=allowed)
 
-    with open(args.out, "w", encoding="utf-8") as f:
+    out_path = Path(args.out)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(movies, f, ensure_ascii=False, indent=2)
 
-    print(f"Da luu {len(movies)} phim vao {args.out}")
+    print(f"Da luu {len(movies)} phim vao {out_path}")
+
 
 
 if __name__ == "__main__":

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ query }} — Máy Tìm Kiếm Phim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* ── Header / search bar ── */
+    .header {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #60a5fa;
+      white-space: nowrap;
+    }
+
+    .header form {
+      display: flex;
+      flex: 1;
+      gap: 8px;
+      max-width: 640px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 8px;
+      color: #f1f5f9;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: #64748b; }
+    .search-input:focus { border-color: #60a5fa; }
+
+    .search-btn {
+      padding: 10px 20px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .search-btn:hover { opacity: 0.85; }
+
+    /* ── Main layout ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .result-count {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 22px;
+    }
+    .result-count strong { color: #93c5fd; }
+
+    /* ── Result card ── */
+    .result {
+      display: flex;
+      gap: 18px;
+      padding: 20px 0;
+      border-bottom: 1px solid #1e293b;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result:nth-child(2)  { animation-delay: 0.04s; }
+    .result:nth-child(3)  { animation-delay: 0.08s; }
+    .result:nth-child(4)  { animation-delay: 0.12s; }
+    .result:nth-child(5)  { animation-delay: 0.16s; }
+    .result:nth-child(6)  { animation-delay: 0.20s; }
+    .result:nth-child(7)  { animation-delay: 0.24s; }
+    .result:nth-child(8)  { animation-delay: 0.28s; }
+    .result:nth-child(9)  { animation-delay: 0.32s; }
+    .result:nth-child(10) { animation-delay: 0.36s; }
+
+    .poster {
+      flex-shrink: 0;
+      width: 72px;
+    }
+    .poster img {
+      width: 72px;
+      height: 108px;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+    }
+    .poster-placeholder {
+      width: 72px;
+      height: 108px;
+      background: #1e293b;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .info { flex: 1; min-width: 0; }
+
+    /* Title = link to TMDB */
+    .title-link {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #60a5fa;
+      text-decoration: none;
+      line-height: 1.4;
+      display: inline-block;
+      margin-bottom: 4px;
+      transition: color 0.15s;
+    }
+    .title-link:hover { color: #93c5fd; text-decoration: underline; }
+
+    .original-title {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .badge {
+      background: #1e3a5f;
+      color: #93c5fd;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #2563eb44;
+    }
+
+    .year  { color: #64748b; font-size: 0.82rem; }
+    .score { color: #a78bfa; font-size: 0.82rem; font-weight: 600; }
+
+    /* Overview with highlight */
+    .overview {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      line-height: 1.65;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    mark {
+      background: #854d0e55;
+      color: #fde68a;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    /* ── No results ── */
+    .no-results {
+      text-align: center;
+      padding: 60px 0;
+      color: #475569;
+    }
+    .no-results .icon { font-size: 3rem; margin-bottom: 12px; }
+    .no-results p     { font-size: 1rem; }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 40px;
+    }
+
+    .page-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1.5px solid #334155;
+      background: #1e293b;
+      color: #94a3b8;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .page-btn:hover:not(.disabled):not(.active) {
+      background: #1e3a5f;
+      color: #60a5fa;
+      border-color: #3b82f6;
+    }
+    .page-btn.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+    .page-btn.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .page-info { color: #64748b; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Search bar -->
+  <header class="header">
+    <a class="brand" href="/">🎬 CineSearch</a>
+    <form action="/search" method="get">
+      <input
+        class="search-input"
+        type="text"
+        name="q"
+        value="{{ query }}"
+        placeholder="Tìm phim..."
+        autocomplete="off"
+        autofocus
+      >
+      <button class="search-btn" type="submit">Tìm</button>
+    </form>
+  </header>
+
+  <!-- Results -->
+  <main class="container">
+
+    {% if total > 0 %}
+      <p class="result-count">
+        <strong>{{ total }}</strong> kết quả cho
+        "<strong>{{ query }}</strong>"
+        — trang {{ page }}/{{ total_pages }}
+      </p>
+
+      {% for r in results %}
+        <article class="result">
+          <!-- Poster -->
+          <div class="poster">
+            {% if r.poster_url %}
+              <img src="{{ r.poster_url }}" alt="{{ r.title }}" loading="lazy">
+            {% else %}
+              <div class="poster-placeholder">🎞️</div>
+            {% endif %}
+          </div>
+
+          <!-- Info -->
+          <div class="info">
+            <!-- Tiêu đề là link đến trang TMDB -->
+            <a class="title-link"
+               href="{{ r.tmdb_url }}"
+               target="_blank"
+               rel="noopener noreferrer">
+              {{ r.title }}
+            </a>
+
+            {% if r.original_title and r.original_title != r.title %}
+              <div class="original-title">{{ r.original_title }}</div>
+            {% endif %}
+
+            <div class="meta">
+              {% if r.release_date %}
+                <span class="year">{{ r.release_date[:4] }}</span>
+              {% endif %}
+              {% for g in r.genres[:3] %}
+                <span class="badge">{{ g }}</span>
+              {% endfor %}
+              <span class="score">⭐ {{ "%.3f"|format(r.score) }}</span>
+            </div>
+
+            <!-- Đoạn tóm tắt với keyword được highlight -->
+            {% if r.overview_hl %}
+              <p class="overview">{{ r.overview_hl }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+
+      <!-- Phân trang -->
+      <nav class="pagination">
+        {% if has_prev %}
+          <a class="page-btn" href="/search?q={{ query|urlencode }}&page={{ page - 1 }}">← Trước</a>
+        {% else %}
+          <span class="page-btn disabled">← Trước</span>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+          {% if p == page %}
+            <span class="page-btn active">{{ p }}</span>
+          {% elif (p <= 2) or (p >= total_pages - 1) or (p >= page - 1 and p <= page + 1) %}
+            <a class="page-btn" href="/search?q={{ query|urlencode }}&page={{ p }}">{{ p }}</a>
+          {% elif p == 3 or p == total_pages - 2 %}
+            <span class="page-info">…</span>
+          {% endif %}
+        {% endfor %}
+
+        {% if has_next %}
+          <a class="page-btn" href="/search?q={{ query|urlencode }}&page={{ page + 1 }}">Tiếp →</a>
+        {% else %}
+          <span class="page-btn disabled">Tiếp →</span>
+        {% endif %}
+      </nav>
+
+    {% else %}
+      <div class="no-results">
+        <div class="icon">🔍</div>
+        <p>Không tìm thấy kết quả cho "<strong>{{ query }}</strong>"</p>
+        <p style="margin-top:8px;font-size:0.85rem;">
+          Thử tìm với từ khóa khác hoặc bằng tiếng Anh.
+        </p>
+      </div>
+    {% endif %}
+
+  </main>
+
+</body>
+</html>

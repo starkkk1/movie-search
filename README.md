@@ -51,24 +51,19 @@ python search.py "phim hành động siêu anh hùng"
 python search.py "horror thriller"
 ```
 
-### 5. Khởi chạy ứng dụng
+### 5. Khởi chạy ứng dụng Web (Flask)
 
-Cần mở **2 terminal** chạy song song:
-
-**Terminal 1 — Backend API (Flask):**
 ```bash
 python app.py
-# Chạy tại http://127.0.0.1:5000
 ```
 
-**Terminal 2 — Frontend (Next.js):**
-```bash
-cd frontend
-npm run dev
-# Chạy tại http://localhost:3000
-```
+Mở trình duyệt: **http://127.0.0.1:5000**
 
-Mở trình duyệt: **http://localhost:3000**
+- Trang chủ (`/`): Ô nhập từ khóa tìm kiếm.
+- Trang kết quả (`/search?q=...&page=N`):
+  - Hiển thị danh sách kết quả, tiêu đề đính kèm liên kết tới trang phim TMDB gốc.
+  - Tóm tắt nội dung được **highlight** các từ khóa khớp với truy vấn.
+  - **Phân trang** (10 kết quả/trang) với điều hướng trang tiện lợi.
 
 ### 6. Đánh giá hệ thống (Module 5)
 
@@ -92,14 +87,11 @@ movie_search/
 ├── fetch_movies.py        # Module 1: crawl dữ liệu từ TMDB (lọc vi/en)
 ├── build_index.py         # Module 2+3: xử lý văn bản, xây TF-IDF index
 ├── search.py              # Module 3: tìm kiếm + xếp hạng (cosine similarity)
-├── app.py                 # Module 4: Flask API (/, /api/search)
+├── app.py                 # Module 4: Web Flask (/, /search, /api/search)
 ├── evaluate.py            # Module 5: Precision@10, MAP
-├── templates/
-│   └── index.html         # Giao diện Flask (legacy)
-├── frontend/              # Giao diện Next.js + Tailwind CSS
-│   └── src/app/
-│       ├── page.tsx       # Trang chính (search + kết quả)
-│       └── globals.css    # Glassmorphism, animations
+├── templates/             # Giao diện HTML (Jinja2)
+│   ├── home.html          # Trang chủ (ô tìm kiếm)
+│   └── results.html       # Trang kết quả (phân trang, highlight, link TMDB)
 └── data/                  # ← bị gitignore
     ├── movies.json        # Dữ liệu thô (sinh ra sau bước 2)
     └── index.pkl          # Chỉ mục TF-IDF (sinh ra sau bước 3)
@@ -111,4 +103,5 @@ movie_search/
 - **Trọng số theo trường**: tên phim (`title`, `original_title`) và thể loại được lặp lại nhiều lần trước khi đưa vào TF-IDF, tạo hiệu ứng field-weighted ranking mà không cần can thiệp thủ công vào thuật toán.
 - **Tìm kiếm song ngữ**: `original_title` (tiếng Anh) + bảng ánh xạ thể loại Việt–Anh được đưa vào document, cho phép tìm bằng từ khóa như "action", "horror", "sci-fi".
 - **Lọc ngôn ngữ**: chỉ giữ phim có `original_language` là `vi` hoặc `en` khi crawl.
-- **Frontend**: Next.js 16 + Tailwind CSS v4, giao tiếp với Flask qua proxy `/api/search`.
+- **Giao diện Web**: Flask (Python) phục vụ render template Jinja2 hỗ trợ phân trang, keyword highlight và chuyển hướng link TMDB.
+

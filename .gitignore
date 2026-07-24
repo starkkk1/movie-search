@@ -11,10 +11,10 @@ data/
 # Biến môi trường
 .env
 
-# Node / Next.js
-frontend/node_modules/
-frontend/.next/
-frontend/out/
+# Node / Frontend
+node_modules/
+.next/
+
 
 # Editor
 .vscode/
